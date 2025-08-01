@@ -10,4 +10,7 @@ if __name__ == "__main__":
     text = parse_text_file(text_file)
     with AudioFile(audio_file) as audio:
         sync_map = generate_sync_map(audio, text)
-        create_video(audio, sync_map)
+        video = create_video(audio, sync_map)
+
+        video_path = input("Enter file path to export: ")
+        video.write_videofile(video_path, fps=24)

@@ -3,8 +3,10 @@ from moviepy import TextClip, CompositeVideoClip
 
 def create_video(audio, sync_map):
     clips = []
-    for fragment in sync_map:
+    for fragment in sync_map[1:-1]:
         text = fragment.text
+        if not text:
+            continue
         start = float(fragment.begin)
         end = float(fragment.end)
         duration = end - start
@@ -12,7 +14,7 @@ def create_video(audio, sync_map):
         text_clip = (
             TextClip(text=text, font_size=20, color="green", size=(1080, 200))
             .with_start(start)
-            .with_duration(duration)
+            .with_duration(duration, change_end=True)
             .with_position("center", "bottom")
         )
         clips.append(text_clip)
@@ -22,4 +24,4 @@ def create_video(audio, sync_map):
         .with_audio(audio)
         .with_duration(audio.duration)
     )
-    video.preview(fps=25)
+    return video
