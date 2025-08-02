@@ -1,6 +1,6 @@
 from file import AudioFile, parse_text_file
 from audio import generate_sync_map
-from video import create_video
+from video import TypingEffect, TextVideo
 
 
 if __name__ == "__main__":
@@ -10,7 +10,8 @@ if __name__ == "__main__":
     text = parse_text_file(text_file)
     with AudioFile(audio_file) as audio:
         sync_map = generate_sync_map(audio, text)
-        video = create_video(audio, sync_map)
+        video = TextVideo(audio, sync_map, fps=24, resolution=(540, 960))
+        video.effect = TypingEffect
 
-        video_path = input("Enter file path to export: ")
-        video.write_videofile(video_path, fps=24)
+        export_path = input("Enter export path: ")
+        video.export(export_path)
