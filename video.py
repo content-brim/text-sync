@@ -40,17 +40,17 @@ class TypingEffect:
 
     def render_text(self, text):
         width, height = self.video.resolution
-        surface = gz.Surface(width - 100, height - 100, bg_color=(0.12, 0.12, 0.12))
+        surface = gz.Surface(width - 100, height - 100)
         text_box = gz.text(
             text,
             fontfamily="Courier.ttf",
             fontweight="normal",
             fontsize=24,
-            fill=(0.23, 0.74, 0.96),
+            fill=(0.23, 0.74, 0.96, 1),
             xy=(100, 100),
         )
         text_box.draw(surface)
-        return surface.get_npimage()
+        return surface.get_npimage(transparent=True)
 
     def __call__(self, timestamp):
         text = self.get_text_at(timestamp)
@@ -78,10 +78,19 @@ class TextVideo:
             raise ValueError("No effect set.")
 
         duration = self.audio.duration
-        video = VideoClip(
-            frame_function=self.effect,
+        video_mask = VideoClip(
+            frame_function=lambda t: self.effect(t)[:, :, 3] / 255.0,
             duration=duration,
+            is_mask=True,
         ).with_position((50, 50))
+        video = (
+            VideoClip(
+                frame_function=lambda t: self.effect(t)[:, :, :3],
+                duration=duration,
+            )
+            .with_position((50, 50))
+            .with_mask(video_mask)
+        )
 
         result = (
             CompositeVideoClip([video], size=self.resolution)
