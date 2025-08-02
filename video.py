@@ -1,4 +1,5 @@
-from moviepy import TextClip, CompositeVideoClip, VideoClip
+from moviepy import CompositeVideoClip, VideoClip
+import gizeh as gz
 
 
 class TypingEffect:
@@ -37,30 +38,23 @@ class TypingEffect:
                 return text
         return ""
 
-    def __call__(self, timestamp):
-        text = self.get_text_at(timestamp).strip()
-        if text in self.frames_cache:
-            return self.frames_cache[text]
-
-        size = list(self.video.resolution)
-        size[0] -= 100
-        size[1] -= 100
-
-        clip = TextClip(
-            text=text,
-            font="Courier.ttf",
-            font_size=24,
-            color="#60bef6",
-            bg_color=None,
-            transparent=True,
-            method="caption",
-            horizontal_align="left",
-            vertical_align="top",
-            size=size,
+    def render_text(self, text):
+        width, height = self.video.resolution
+        surface = gz.Surface(width - 100, height - 100, bg_color=(0.12, 0.12, 0.12))
+        text_box = gz.text(
+            text,
+            fontfamily="Courier.ttf",
+            fontweight="normal",
+            fontsize=24,
+            fill=(0.23, 0.74, 0.96),
+            xy=(100, 100),
         )
-        frame = clip.get_frame(0)
-        self.frames_cache[text] = frame
-        return frame
+        text_box.draw(surface)
+        return surface.get_npimage()
+
+    def __call__(self, timestamp):
+        text = self.get_text_at(timestamp)
+        return self.render_text(text)
 
 
 class TextVideo:
@@ -83,7 +77,7 @@ class TextVideo:
         if self.effect is None:
             raise ValueError("No effect set.")
 
-        duration = self.audio.duration + 2
+        duration = self.audio.duration
         video = VideoClip(
             frame_function=self.effect,
             duration=duration,

@@ -1,3 +1,4 @@
+gizeh==0.1.11
 moviepy==2.2.1
 numpy==2.2.6
 aeneas==1.7.3.0 # Important to install after `numpy`
