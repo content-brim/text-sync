@@ -43,6 +43,7 @@ class TextSettings:
     color: list = field(default_factory=lambda: [0, 0, 0, 100])
     alignment: list = field(default_factory=lambda: ["left", "top"])
     margin: list = field(default_factory=lambda: [0, 0, 0, 0])
+    line_spacing_multiplier = 1.3
 
 
 PROGRAMMING_TEXT_SETTINGS = (
