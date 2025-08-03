@@ -4,7 +4,7 @@ import gizeh as gz
 class Text:
     def __init__(self, project):
         self.project = project
-        self.text: str = project.timeline[0].text
+        self.text = project.timeline[0].text
 
         self.with_color(*project.text_settings.color)
         self.with_alignment(*project.text_settings.alignment)
@@ -33,8 +33,6 @@ class Text:
             "fontsize": font_size,
             "fontfamily": font_family,
         }
-        self.compute_size()
-        self.compute_position()
         return self
 
     def with_margin(self, top, right, bottom, left):
@@ -44,41 +42,40 @@ class Text:
         return self
 
     def compute_size(self):
-        lines = self.text.split("\n")
-        symbols_height = len(lines)
-        symbols_width = 0
-        for l in lines:
-            width = len(l)
-            if width > symbols_width:
-                symbols_width = width
-
         width = (
-            symbols_width * self.font_kwargs["fontsize"]
+            self.project.project_settings.resolution[0]
             - self.margin[1]
             - self.margin[3]
         )
         height = (
-            symbols_height * self.font_kwargs["fontsize"]
+            self.project.project_settings.resolution[1]
             - self.margin[0]
             - self.margin[2]
         )
         self.size_kwargs = {"width": width, "height": height}
 
     def compute_position(self):
-        x = 0
-        if self.align_kwargs["h_align"] == "center":
-            x = self.size_kwargs["width"] / 2
-        elif self.align_kwargs["h_align"] == "right":
-            x = self.size_kwargs["width"]
+        match self.align_kwargs["h_align"]:
+            case "left":
+                x = self.margin[3]
+            case "center":
+                x = self.project.project_settings.resolution[0] / 2
+            case "right":
+                x = self.project.project_settings.resolution[0] - self.margin[1]
 
-        y = 0
-        if self.align_kwargs["v_align"] == "center":
-            y = self.size_kwargs["height"] / 2
-        elif self.align_kwargs["v_align"] == "bottom":
-            y = self.size_kwargs["height"]
+        match self.align_kwargs["v_align"]:
+            case "top":
+                y = self.font_kwargs["fontsize"] + self.margin[0]
+            case "center":
+                y = self.project.project_settings.resolution[1] / 2
+            case "bottom":
+                y = (
+                    self.project.project_settings.resolution[1]
+                    - self.margin[0]
+                    - self.margin[2]
+                    - self.font_kwargs["fontsize"]
+                )
 
-        x += self.margin[3]
-        y += self.font_kwargs["fontsize"] + self.margin[0]
         self.position = [x, y]
 
     def render(self):
