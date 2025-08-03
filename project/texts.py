@@ -51,7 +51,10 @@ class Text:
         max_chars_per_line = int(
             (self.size_kwargs["width"]) / (self.font_kwargs["fontsize"] * width_factor)
         )
-        self.text = textwrap.wrap(text, width=max_chars_per_line)
+        self.text = []
+        for line in text.split("\n"):
+            wrapped_line = textwrap.wrap(line, width=max_chars_per_line)
+            self.text.extend(wrapped_line)
         self.compute_line_space()
         return self
 

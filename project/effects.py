@@ -40,15 +40,15 @@ class TypingEffect(BaseEffect):
     def compute_timestamps_text(self):
         self.timestamps = []
         self.texts = []
-
+        full_text = ""
         for fragment in self.project.timeline:
-            full_text = ""
             current_time = float(fragment.begin)
             for char in fragment.text:
                 full_text += char
                 self.timestamps.append(current_time)
                 self.texts.append(full_text)
                 current_time += self.time_per_char
+            full_text += "\n"
 
     def get_text_at(self, timestamp):
         idx = bisect_right(self.timestamps, timestamp) - 1
