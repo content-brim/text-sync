@@ -10,7 +10,7 @@ if __name__ == "__main__":
     project.project_settings = settings.VERTICAL_PROJECT_SETTINGS
 
     project.import_audio_text(audio_file, text_file)
-    project.effect = effects.BaseEffect
+    project.effect = effects.TypingEffect
 
     project.export_settings = settings.FAST_RENDER_EXPORT_SETTINGS
     project.export()
